@@ -92,3 +92,10 @@ export interface ApiError {
   message: string
   code?: string
 }
+
+export interface TelegramAuthResponse {
+  token: string
+  username: string
+  telegramId: number
+  requiresProfileSetup: boolean
+}

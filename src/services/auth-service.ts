@@ -1,11 +1,11 @@
 import { apiClient } from "./api-client"
-import type { AuthResponse, UserProfile } from "@/types"
+import type { AuthResponse, UserProfile, TelegramAuthResponse } from "@/types"
 import { apiEndpoints } from "@/config/api-config"
 import { STORAGE_KEYS } from "@/constants"
 
 export const authService = {
   async loginWithTelegram(initData: string): Promise<AuthResponse> {
-    const response = await apiClient.post(apiEndpoints.auth.login, {
+    const response: TelegramAuthResponse = await apiClient.post(apiEndpoints.auth.login, {
       initData,
     })
 
@@ -13,11 +13,23 @@ export const authService = {
       localStorage.setItem(STORAGE_KEYS.TOKEN, response.token)
     }
 
-    if (response.profile) {
-      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(response.profile))
+    const profile: UserProfile = {
+      id: String(response.telegramId),
+      nickname: response.username,
+      position: "GK", // Default, will be updated on setup
+      teamName: "",
+      isCaptain: false,
     }
 
-    return response
+    if (profile) {
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile))
+    }
+
+    return {
+      token: response.token,
+      profileSetupComplete: !response.requiresProfileSetup,
+      profile,
+    }
   },
 
   async logout(): Promise<void> {
@@ -47,12 +59,20 @@ export const authService = {
       position,
     })
 
-    if (response.profile) {
-      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(response.profile))
+    const profile: UserProfile = {
+      id: String(response.telegramId || response.id),
+      nickname: response.nickname || nickname,
+      position: position as "GK" | "DF" | "MF" | "FW",
+      teamName: response.teamName || "",
+      isCaptain: response.isCaptain || false,
+    }
+
+    if (profile) {
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile))
       localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETE, "true")
     }
 
-    return response.profile
+    return profile
   },
 
   getStoredToken(): string | null {

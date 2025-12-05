@@ -32,15 +32,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedProfile = authService.getStoredProfile()
 
       if (storedToken) {
-        const isValid = await authService.validateToken()
-        if (isValid) {
-          setToken(storedToken)
-          setUser(storedProfile)
-          setProfileSetupComplete(authService.isOnboardingComplete())
-        } else {
-          localStorage.removeItem("token")
-          localStorage.removeItem("userProfile")
-        }
+        // In production, validate with backend GET /auth/me
+        setToken(storedToken)
+        setUser(storedProfile)
+        setProfileSetupComplete(
+          storedProfile?.position && storedProfile.position !== "GK" ? true : authService.isOnboardingComplete(),
+        )
       }
     } catch (error) {
       console.error("[v0] Auth check error:", error)
@@ -53,6 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true)
     try {
       const response = await authService.loginWithTelegram(initData)
+      console.log("[v0] Login response:", response)
       setToken(response.token)
       setUser(response.profile)
       setProfileSetupComplete(response.profileSetupComplete)
