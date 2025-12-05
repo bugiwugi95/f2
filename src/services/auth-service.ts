@@ -5,9 +5,14 @@ import { STORAGE_KEYS } from "@/constants"
 
 export const authService = {
   async loginWithTelegram(initData: string): Promise<AuthResponse> {
+    console.log("[v0] Starting Telegram login with initData:", initData.substring(0, 50) + "...")
+    console.log("[v0] API URL:", process.env.NEXT_PUBLIC_API_URL)
+
     const response: TelegramAuthResponse = await apiClient.post(apiEndpoints.auth.login, {
       initData,
     })
+
+    console.log("[v0] Auth response received:", response)
 
     if (response.token) {
       localStorage.setItem(STORAGE_KEYS.TOKEN, response.token)
@@ -16,7 +21,7 @@ export const authService = {
     const profile: UserProfile = {
       id: String(response.telegramId),
       nickname: response.username,
-      position: "GK", // Default, will be updated on setup
+      position: "GK",
       teamName: "",
       isCaptain: false,
     }

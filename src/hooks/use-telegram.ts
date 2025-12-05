@@ -17,11 +17,17 @@ export function useTelegram() {
       const data = telegramService.getInitData()
       const dataUnsafe = telegramService.getInitDataUnsafe()
 
+      if (process.env.NEXT_PUBLIC_DEV_MODE === "true") {
+        console.log("[v0] Dev mode enabled - using mock Telegram data")
+        console.log("[v0] initData:", data)
+      }
+
       setInitData(data)
       setInitDataUnsafe(dataUnsafe)
       setIsReady(true)
     } catch (error) {
       console.error("[v0] Telegram initialization error:", error)
+      setIsReady(true)
     }
   }, [])
 

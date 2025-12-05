@@ -35,6 +35,8 @@ class ApiClient {
       ...options.headers,
     }
 
+    console.log("[v0] API Request:", method, url, options.body)
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), options.timeout || this.timeout)
 
@@ -48,16 +50,23 @@ class ApiClient {
 
       clearTimeout(timeoutId)
 
+      console.log("[v0] API Response status:", response.status)
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
+        console.error("[v0] API Error:", errorData)
         const error = new Error(errorData.message || `HTTP ${response.status}`)
         ;(error as any).response = { status: response.status, data: errorData }
         throw error
       }
 
-      return await response.json()
+      const data = await response.json()
+      console.log("[v0] API Response data:", data)
+      return data
     } catch (error: any) {
       clearTimeout(timeoutId)
+
+      console.error("[v0] API Exception:", error)
 
       if (error.name === "AbortError") {
         const apiError: ApiError = {

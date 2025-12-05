@@ -23,6 +23,21 @@ export const telegramService = {
 
   getInitData(): string {
     const webApp = this.getTelegramWebApp()
+
+    if (!webApp?.initData && process.env.NEXT_PUBLIC_DEV_MODE === "true") {
+      // Mock initData for local development
+      const mockUser = {
+        id: 123456789,
+        is_bot: false,
+        first_name: "IliaBugay",
+        last_name: "Dev",
+        username: "iliabugay",
+        language_code: "ru",
+      }
+
+      return `query_id=mock_query_id&user=${encodeURIComponent(JSON.stringify(mockUser))}&auth_date=1234567890&hash=mock_hash`
+    }
+
     return webApp?.initData || ""
   },
 
