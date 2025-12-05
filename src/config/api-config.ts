@@ -1,21 +1,21 @@
 export const apiEndpoints = {
   auth: {
-    login: "/auth/telegram",
-    logout: "/auth/logout",
-    validate: "/auth/me",
+    login: "/api/auth/telegram",
+    logout: "/api/auth/logout",
+    validate: "/api/auth/me",
   },
   players: {
-    setup: "/players/me/setup",
-    profile: "/players/me/profile",
-    dashboard: "/players/me/dashboard",
-    matches: "/players/me/matches",
+    setup: "/api/players/setup",
+    profile: "/api/players/profile",
+    dashboard: "/api/players/dashboard",
+    matches: "/api/players/matches",
   },
   team: {
-    list: "/team",
-    members: "/team/members",
+    list: "/api/team",
+    members: "/api/team/members",
   },
   matches: {
-    list: "/matches",
-    detail: (id: string) => `/matches/${id}`,
+    list: "/api/matches",
+    detail: (id: string) => `/api/matches/${id}`,
   },
 } as const
